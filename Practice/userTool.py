@@ -113,14 +113,49 @@ first initial and full last name) > """
 
     # Group
     time.sleep(1)
-    prompt = """Next, what group would you like the user to be added to?
+    prompt = """\nNext, what group would you like the user to be added to?
 (NOTE: The user will be created with a default group that is the same as their
 username.  If you would like that user to be added to an additional group,
 i.e. HR, Management, IT, etc., please specify it here) > """
     userGroup = checkInput(prompt)
     time.sleep(1)
 
-    # Check to see if the group specified exisits.  If it doesn't ask user 
+    # Check to see if the group specified exisits.  If it doesn't ask user if
+    # the group should be created
+
+    groups = subprocess.Popen("getent group | cut -d: -f1", stdout=subprocess.PIPE, universal_newlines=True, stderr=None, shell=True)
+
+    existing_groups = []
+    for line in groups.stdout:
+        line = line.rstrip()
+        existing_groups.append(line)
+
+    while userGroup not in existing_groups:
+        print("\nThat is not an existing group.  Please enter a different group")
+        time.sleep(1)
+        userGroup = checkInput(prompt)
+
+    print("\nOk, just to recap:\nFull Name: " + fullName + "\nUsername: " + userName + "\nGroup:  "+ userGroup)
+
+    print("\nIs this information correct?")
+    while True:
+        correctInfo = input("(Y)es or (N)o: ").strip()
+        try:
+            if not correctInfo:
+                raise ValueError
+            if not re.match("^[yYnN]*$", correctInfo):
+                raise ValueError
+        except ValueError:
+            print("Numbers are not allowed and the field CAN NOT be blank!")
+        else:
+            break
+
+    if (correctInfo == 'y') or (correctInfo == 'Y'):
+        print("Great! Creating new user now...")
+        time.sleep(2)
+    elif (correctInfo == 'n') or (correctInfo == 'N'):
+        print("Please enter the information again")
+        newUser()
 
 def newAdmin():
     pass
