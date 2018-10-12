@@ -135,7 +135,7 @@ i.e. HR, Management, IT, etc., please specify it here) > """
         time.sleep(1)
         userGroup = checkInput(prompt)
 
-    print("\nOk, just to recap:\nFull Name: " + fullName + "\nUsername: " + userName + "\nGroup:  "+ userGroup)
+    print("\nOk, just to recap:\nFull Name : " + fullName + "\nUsername  : " + userName + "\nGroup     : "+ userGroup)
 
     print("\nIs this information correct?")
     while True:
@@ -153,12 +153,75 @@ i.e. HR, Management, IT, etc., please specify it here) > """
     if (correctInfo == 'y') or (correctInfo == 'Y'):
         print("Great! Creating new user now...")
         time.sleep(2)
+        userAdd = "useradd -M -G %s -c \"%s\" %s" % (userGroup, fullName, userName)
+        addToGroup = "adduser %s %s" % (userName, userGroup)
+
+        print(userAdd)         #testing only
+        print(addToGroup)      #testing only
+        #createUser = subprocess.Popen(userAdd, stdout=subprocess.PIPE)
+        #userToGroup = subprocess.Popen(addToGroup, stdout=subprocess.PIPE)
+        time.sleep(1)
+
+        print("\nCongratulations!  The user has successfully been created!  Returning to the Main Menu...")
+        time.sleep(2)
+        mainMenu()
+
     elif (correctInfo == 'n') or (correctInfo == 'N'):
         print("Please enter the information again")
         newUser()
 
 def newAdmin():
-    pass
+    # Full Name
+    print("Welcome to the Admin Creation Interface\n")
+    time.sleep(1)
+    prompt = "First things first, what is the full name (First and Last) of the New User? > "
+    fullName = checkInput(prompt)
+    time.sleep(1)
+    print("\nGreat! The name for the new user is: " + fullName)
+    print("\n")
+
+    # User Name
+    time.sleep(1)
+    prompt = """Next, what is the username of the User?  (We recommend using
+first initial and full last name) > """
+    userName = checkInput(prompt)
+    time.sleep(1)
+    print("\nGreat! The username for the new user is: " + userName)
+    print("\n")
+
+    print("\nOk, just to recap:\nFull Name : " + fullName + "\nUsername  : " + userName)
+    print("\nIs this information correct?")
+    while True:
+        correctInfo = input("(Y)es or (N)o: ").strip()
+        try:
+            if not correctInfo:
+                raise ValueError
+            if not re.match("^[yYnN]*$", correctInfo):
+                raise ValueError
+        except ValueError:
+            print("Numbers are not allowed and the field CAN NOT be blank!")
+        else:
+            break
+
+    if (correctInfo == 'y') or (correctInfo == 'Y'):
+        print("Great! Creating new user now...")
+        time.sleep(2)
+        userAdd = "useradd -M -c \"%s\" %s" % (fullName, userName)
+        addToGroup = "adduser %s wheel" % userName
+
+        print(userAdd)         #testing only
+        print(addToGroup)      #testing only
+        #createUser = subprocess.Popen(userAdd, stdout=subprocess.PIPE)
+        #userToGroup = subprocess.Popen(addToGroup, stdout=subprocess.PIPE)
+        time.sleep(1)
+
+        print("\nCongratulations!  The user has successfully been created!  Returning to the Main Menu...")
+        time.sleep(2)
+        mainMenu()
+
+    elif (correctInfo == 'n') or (correctInfo == 'N'):
+        print("Please enter the information again")
+        newUser()
 
 def modifyGroup():
     pass
