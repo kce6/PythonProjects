@@ -218,7 +218,12 @@ def getLab():
     print("Which lab would you like to work with?")
     prompt = "Enter Lab Choice: "
     labChoice = checkInt(prompt)
-    return labChoice
+
+    if labChoice in labs.keys():
+        return labs[labChoice]
+    else:
+        print("That was not a valid choice.  Please enter again")
+        getLab()
 
 
 def getUsername():
@@ -236,6 +241,8 @@ def getPassword():
 
     # Calls
 displayLabs(labs)
+
+
 lab = getLab()
 uname = getUsername()
 passwd = getPassword()
