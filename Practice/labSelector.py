@@ -199,6 +199,10 @@ def getLabChoice():
 
 
 def validateLabChoice(lab):
+    # trying to parse through the labName field of each nested list and compare
+    # the user's input against all of the labName fields.  If the entered lab Name
+    # matches an existing lab name, return that nested dictionary for the lab.
+    # if there is no matching lab name, ask the user for input again
     for i in lab.keys():
         for labName in lab[i]:
             print(labName)
