@@ -261,7 +261,7 @@ def modifyGroup():
         time.sleep(1)
 
         groupPrompt = """Please enter the name of the group you would like
-        to become the Primary for %s""" % user
+        to become Primary: """
         group = checkInput(groupPrompt)
         time.sleep(1)
 
@@ -278,7 +278,8 @@ def modifyGroup():
             time.sleep(1)
             userGroup = checkInput(prompt)
 
-        print("\nJust to confirm:\nUser  : %s\nGroup : %s\n") % (user, group)
+        print("\nJust to confirm:\nUser  : %s\nNew Primary Group : %s\n" %
+              (user, group))
         print("\nIs this information correct?")
         while True:
             correctInfo = input("(Y)es or (N)o: ").strip()
