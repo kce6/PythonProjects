@@ -18,6 +18,8 @@ import re
 
 # Functions
 # Main Menu
+
+
 def mainMenu():
     print("\nWelcome to the User Creation Service\n")
     print("Please select one of the following options: \n")
@@ -32,11 +34,11 @@ def mainMenu():
         try:
             choice = int(input("Enter your choice > "))
         except ValueError:
-            #try again
+            # try again
             print("Sorry, that was not a number.  Please enter a new choice")
             continue
         else:
-            #choice was successfully parsed.  exiting loop
+            # choice was successfully parsed.  exiting loop
             break
 
     if choice == 1:
@@ -70,7 +72,7 @@ def mainMenu():
     elif choice == 5:
         print("\nExiting program...")
         time.sleep(1)
-        exit()
+        exitProgram()
 
     else:
         print("\nThat was not one of the options, please choose again")
@@ -78,6 +80,8 @@ def mainMenu():
         mainMenu()
 
 # Sanitize User Input
+
+
 def checkInput(prompt):
     while True:
         result = input(prompt).strip()
@@ -92,6 +96,8 @@ def checkInput(prompt):
             return result
 
 # New User
+
+
 def newUser():
     # Full Name
     print("Welcome to the New User Creation Interface\n")
@@ -123,7 +129,8 @@ i.e. HR, Management, IT, etc., please specify it here) > """
     # Check to see if the group specified exisits.  If it doesn't ask user if
     # the group should be created
 
-    groups = subprocess.Popen("getent group | cut -d: -f1", stdout=subprocess.PIPE, universal_newlines=True, stderr=None, shell=True)
+    groups = subprocess.Popen("getent group | cut -d: -f1", stdout=subprocess.PIPE,
+                              universal_newlines=True, stderr=None, shell=True)
 
     existing_groups = []
     for line in groups.stdout:
@@ -135,7 +142,8 @@ i.e. HR, Management, IT, etc., please specify it here) > """
         time.sleep(1)
         userGroup = checkInput(prompt)
 
-    print("\nOk, just to recap:\nFull Name : " + fullName + "\nUsername  : " + userName + "\nGroup     : "+ userGroup)
+    print("\nOk, just to recap:\nFull Name : " + fullName +
+          "\nUsername  : " + userName + "\nGroup     : " + userGroup)
 
     print("\nIs this information correct?")
     while True:
@@ -153,11 +161,12 @@ i.e. HR, Management, IT, etc., please specify it here) > """
     if (correctInfo == 'y') or (correctInfo == 'Y'):
         print("Great! Creating new user now...")
         time.sleep(2)
-        userAdd = "useradd -M -G %s -c \"%s\" %s" % (userGroup, fullName, userName)
-        addToGroup = "adduser %s %s" % (userName, userGroup)
+        userAdd = "useradd -M -G %s -c \"%s\" %s" % (
+            userGroup, fullName, userName)
+        addToGroup = "usermod -G %s %s" % (userName, userGroup)
 
-        print(userAdd)         #testing only
-        print(addToGroup)      #testing only
+        print(userAdd)  # testing only
+        print(addToGroup)  # testing only
         #createUser = subprocess.Popen(userAdd, stdout=subprocess.PIPE)
         #userToGroup = subprocess.Popen(addToGroup, stdout=subprocess.PIPE)
         time.sleep(1)
@@ -169,6 +178,7 @@ i.e. HR, Management, IT, etc., please specify it here) > """
     elif (correctInfo == 'n') or (correctInfo == 'N'):
         print("Please enter the information again")
         newUser()
+
 
 def newAdmin():
     # Full Name
@@ -189,7 +199,8 @@ first initial and full last name) > """
     print("\nGreat! The username for the new user is: " + userName)
     print("\n")
 
-    print("\nOk, just to recap:\nFull Name : " + fullName + "\nUsername  : " + userName)
+    print("\nOk, just to recap:\nFull Name : " +
+          fullName + "\nUsername  : " + userName)
     print("\nIs this information correct?")
     while True:
         correctInfo = input("(Y)es or (N)o: ").strip()
@@ -209,8 +220,8 @@ first initial and full last name) > """
         userAdd = "useradd -M -c \"%s\" %s" % (fullName, userName)
         addToGroup = "adduser %s wheel" % userName
 
-        print(userAdd)         #testing only
-        print(addToGroup)      #testing only
+        print(userAdd)  # testing only
+        print(addToGroup)  # testing only
         #createUser = subprocess.Popen(userAdd, stdout=subprocess.PIPE)
         #userToGroup = subprocess.Popen(addToGroup, stdout=subprocess.PIPE)
         time.sleep(1)
@@ -223,14 +234,88 @@ first initial and full last name) > """
         print("Please enter the information again")
         newUser()
 
+
 def modifyGroup():
-    pass
+    print("\nYou have chosen to change a user's group.  You have 2 options:")
+    print("\n1.  Change the Primary Group of a User")
+    print("2.  Add a User to a new group that is not their primary group")
+
+    while True:
+        try:
+            choice = int(input("Enter your choice > "))
+        except ValueError:
+            # try again
+            print("Sorry, that was not a number.  Please enter a new choice")
+            continue
+        else:
+            # choice was successfully parsed.  exiting loop
+            break
+
+    if choice == 1:
+        print("\nYou have chosen to change the primary group of a user")
+        time.sleep(1)
+
+        userPrompt = """Please enter the name of the user who's group you
+        would like to change: """
+        user = checkInput(userPrompt)
+        time.sleep(1)
+
+        groupPrompt = """Please enter the name of the group you would like
+        to become the Primary for %s""" % user
+        group = checkInput(groupPrompt)
+        time.sleep(1)
+
+        groups = subprocess.Popen("getent group | cut -d: -f1", stdout=subprocess.PIPE,
+                                  universal_newlines=True, stderr=None, shell=True)
+
+        existing_groups = []
+        for line in groups.stdout:
+            line = line.rstrip()
+            existing_groups.append(line)
+
+        while group not in existing_groups:
+            print("\nThat is not an existing group.  Please enter a different group")
+            time.sleep(1)
+            userGroup = checkInput(prompt)
+
+        print("\nJust to confirm:\nUser  : %s\nGroup : %s\n") % (user, group)
+        print("\nIs this information correct?")
+        while True:
+            correctInfo = input("(Y)es or (N)o: ").strip()
+            try:
+                if not correctInfo:
+                    raise ValueError
+                if not re.match("^[yYnN]*$", correctInfo):
+                    raise ValueError
+            except ValueError:
+                print("Numbers are not allowed and the field CAN NOT be blank!")
+            else:
+                break
+
+        if (correctInfo == 'y') or (correctInfo == 'Y'):
+            print("Great! Changing user group now...")
+            time.sleep(2)
+
+            changeGroup = "usermod -G %s %s" % (group, user)
+            print(changeGroup)
+
+            print("The User's Group has successfully been changed")
+            print("Returning to the main menu...")
+            time.sleep(2)
+            mainMenu()
+
+        elif (correctInfo == 'n') or (correctInfo == 'N'):
+            print("Please enter the information again")
+            modifyGroup()
+
 
 def removeUser():
     pass
 
-def exitProgram():
-    pass
 
-#Starting the program
+def exitProgram():
+    exit()
+
+
+# Starting the program
 mainMenu()
